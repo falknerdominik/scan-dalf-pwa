@@ -6,6 +6,7 @@ import './components/header';
 import './components/video-capture';
 import './components/search-bar';
 import './components/product-display';
+import './components/bottom-bar';
 import './styles/global.css';
 import { router } from './router';
 
@@ -42,7 +43,8 @@ export class AppIndex extends LitElement {
   async checkCacheAndLoad() {
     this.loading = true;
     const CACHE_NAME = 'product-cache-v1';
-    const DATA_URL = 'https://github.com/YOUR_REPOSITORY/releases/latest/download/latest-canonical.tar.gz';
+    // const DATA_URL = 'https://github.com/dominikfalkner/releases/latest/download/latest-canonical.tar.gz';
+    const DATA_URL = 'https://heisse-preise.io/data/latest-canonical.json';
 
 
     const cache = await caches.open(CACHE_NAME);

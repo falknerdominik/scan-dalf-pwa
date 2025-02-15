@@ -84,6 +84,7 @@ export class AppHome extends LitElement {
         </div>
         <product-display .product=${this.selectedProduct}></product-display>
       </main>
+      <bottom-bar></bottom-bar>
     `;
   }
 }

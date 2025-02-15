@@ -1,8 +1,9 @@
 import { LitElement, html, css } from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 
 @customElement('thank-you')
-class ThankYouPage extends LitElement {
+export class ThankYou extends LitElement {
+  redirectUrl: string;
   static styles = css`
     :host {
       display: flex;
@@ -10,35 +11,36 @@ class ThankYouPage extends LitElement {
       align-items: center;
       flex-direction: column;
       height: 100vh;
-      background-color: #f0f8ff;
       overflow: hidden;
+      font-family: 'Arial', sans-serif;
     }
 
     .heart-container {
       position: relative;
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
     }
 
     .heart {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       background-color: #ff69b4;
       transform: translate(-50%, -50%) rotate(45deg);
-      transform-origin: center; /* Ensure the heart spins in place */
-      animation: spinY 3s linear infinite;
-      z-index: 2; /* Keep the heart above the stars */
+      transform-origin: center;
+      animation: spinY 3s linear infinite, pulse 1.5s ease-in-out infinite, glow 2s ease-in-out infinite;
+      z-index: 2;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
     }
 
     .heart::before,
     .heart::after {
       content: '';
       position: absolute;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       background-color: #ff69b4;
       border-radius: 50%;
     }
@@ -59,32 +61,8 @@ class ThankYouPage extends LitElement {
       height: 100%;
       top: 0;
       left: 0;
-      z-index: 1; /* Place stars behind the heart */
+      z-index: 1;
       pointer-events: none;
-    }
-
-    .small-star {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 15px;
-      height: 15px;
-      background-color: rgba(255, 223, 0, 0.8); /* Gold star color */
-      clip-path: polygon(
-        50% 0%,
-        61% 35%,
-        98% 35%,
-        68% 57%,
-        79% 91%,
-        50% 70%,
-        21% 91%,
-        32% 57%,
-        2% 35%,
-        39% 35%
-      );
-      transform: translate(-50%, -50%);
-      opacity: 1;
-      animation: move-away 3s ease-out infinite;
     }
 
     @keyframes spinY {
@@ -93,6 +71,24 @@ class ThankYouPage extends LitElement {
       }
       100% {
         transform: translate(-50%, -50%) rotateY(360deg) rotate(45deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) rotate(45deg) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
+      }
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(255, 105, 180, 1);
       }
     }
 
@@ -107,11 +103,32 @@ class ThankYouPage extends LitElement {
       }
     }
 
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
     .thank-you-text {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 32px;
       font-weight: bold;
-      color: black; /* Black text color */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      animation: fade-in 2s ease-in-out;
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   `;
 
@@ -121,47 +138,26 @@ class ThankYouPage extends LitElement {
   }
 
   firstUpdated() {
-    // Start the animation once the DOM is rendered
-    this.startAnimation();
-
-    // Redirect after 30 seconds
-    setTimeout(() => {
+    const redirect = () => {
       window.location.href = this.redirectUrl;
-    }, 30000); // 30 seconds
-  }
+    };
 
-  startAnimation() {
-    const starContainer = this.shadowRoot.querySelector('.star-container');
+    // Set timeout for redirection
+    const timeoutId = setTimeout(redirect, 30000);
 
-    if (!starContainer) {
-      console.error('Star container not found');
-      return;
-    }
-
-    for (let i = 0; i < 80; i++) {
-      const smallStar = document.createElement('div');
-      smallStar.classList.add('small-star');
-
-      // Generate random directions for the stars
-      const randomX = `${Math.random() * 400 - 200}px`; // -200px to +200px
-      const randomY = `${Math.random() * 400 - 200}px`; // -200px to +200px
-      smallStar.style.setProperty('--random-x', randomX);
-      smallStar.style.setProperty('--random-y', randomY);
-
-      starContainer.appendChild(smallStar);
-
-      // Since the animation repeats infinitely, no need to remove stars
-    }
+    // Add click event listener to redirect on tap
+    this.addEventListener('click', () => {
+      clearTimeout(timeoutId); // Clear the timeout if user taps
+      redirect();
+    });
   }
 
   render() {
     return html`
       <div class="heart-container">
-        <div class="star-container"></div>
         <div class="heart"></div>
       </div>
       <div class="thank-you-text">Thank you</div>
     `;
   }
 }
-
